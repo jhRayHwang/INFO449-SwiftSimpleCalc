@@ -27,32 +27,23 @@ print("Welcome to the UW Calculator Playground")
 //: For this latter set of operations, it is safe to assume that `["count"]` (with no additional arguments) is 0, `["avg"]` is also 0, and `["fact"]` is 0. `["1", "fact"]` should return 1, and `["0", "fact"]` should also return 1. (Yes, 0-factorial is 1. True story.)
 //: 
 func calculate(_ args: [String]) -> Int {
-    // If the array is empty, return 0.
+
     guard !args.isEmpty else { return 0 }
-        
-    // Check if the last element is a special operation keyword.
+    
     if let last = args.last {
         switch last {
         case "count":
-            // Count how many valid numeric strings appear before the final keyword.
-            // For example, ["1", "2", "3", "4", "5", "count"] yields 5.
             let count = args.dropLast().filter { Int($0) != nil }.count
             return count
             
         case "avg":
-            // Calculate the average of the numbers preceding the keyword.
-            // If there are no valid numbers, return 0.
             let numbers = args.dropLast().compactMap { Int($0) }
             guard !numbers.isEmpty else { return 0 }
             let sum = numbers.reduce(0, +)
             return sum / numbers.count
             
         case "fact":
-            // Calculate the factorial of a number.
-            // If no number is provided, return 0.
-            // As stated, factorial of 0 and 1 should be 1.
             if args.count >= 2, let num = Int(args[0]) {
-                // Factorial is only defined for non-negative integers.
                 if num < 0 {
                     return 0
                 }
@@ -72,7 +63,6 @@ func calculate(_ args: [String]) -> Int {
         }
     }
     
-    // If no special operation, assume the expression is in the format: [operand1, operator, operand2].
     if args.count == 3,
         let operand1 = Int(args[0]),
         let operand2 = Int(args[2]) {
@@ -85,23 +75,20 @@ func calculate(_ args: [String]) -> Int {
         case "*":
             return operand1 * operand2
         case "/":
-            // If dividing by zero, return 0 (or handle as appropriate).
             return operand2 != 0 ? operand1 / operand2 : 0
         case "%":
-            // Modulo operator; ensure the divisor is not zero.
             return operand2 != 0 ? operand1 % operand2 : 0
         default:
             break
         }
     }
     
-    // If the input does not match any expected format, return 0.
     return 0
 }
 
 func calculate(_ arg: String) -> Int {
-    let parts = arg.split(separator: " ").map { String($0) }
-    return calculate(parts)
+    let args = arg.split(separator: " ").map { String($0) }
+    return calculate(args)
 }
 
 //: Below this are the test expressions/calls to verify if your code is correct.
@@ -155,7 +142,7 @@ calculate("5 fact") == 120
 //: Implement `calculate([String])` and `calculate(String)` to handle negative numbers. You need only make the tests below pass. (You do not need to worry about "fact"/factorial with negative numbers, for example.)
 //:
 //: This is worth 1 pt
-/*
+
 calculate(["2", "+", "-2"]) == 0
 calculate(["2", "-", "-2"]) == 4
 calculate(["2", "*", "-2"]) == -4
@@ -170,7 +157,7 @@ calculate("2 - -2") == 4
 calculate("-2 / 2") == -1
 
 calculate("1 -2 3 -4 5 count") == 5
-*/
+
  
 //: Implement `calculate([String])` and `calculate(String)` to use 
 //: and return floating-point values. You need only make the tests 
@@ -182,12 +169,56 @@ calculate("1 -2 3 -4 5 count") == 5
 //: Integer-based versions above.
 //: 
 //: This is worth 1 pt
-/*
+
 func calculate(_ args: [String]) -> Double {
-    return -1.0
+    guard !args.isEmpty else { return 0.0 }
+    
+    if let last = args.last {
+        switch last {
+        case "count":
+            let count = args.dropLast().filter { Double($0) != nil }.count
+            return Double(count)
+            
+        case "avg":
+            let numbers = args.dropLast().compactMap { Double($0) }
+            guard !numbers.isEmpty else { return 0.0 }
+            let sum = numbers.reduce(0.0, +)
+            return sum / Double(numbers.count)
+               
+        case "fact":
+            return 0.0
+            
+        default:
+            break
+        }
+    }
+       
+    if args.count == 3,
+        let operand1 = Double(args[0]),
+        let operand2 = Double(args[2]) {
+        let op = args[1]
+        switch op {
+            case "+":
+            return operand1 + operand2
+        case "-":
+            return operand1 - operand2
+        case "*":
+            return operand1 * operand2
+        case "/":
+            return operand2 != 0.0 ? operand1 / operand2 : 0.0
+        case "%":
+            return operand2 != 0.0 ? operand1.truncatingRemainder(dividingBy: operand2) : 0.0
+        default:
+            break
+        }
+    }
+       
+    return 0.0
 }
+
 func calculate(_ arg: String) -> Double {
-    return -1.0
+    let parts = arg.split(separator: " ").map { String($0) }
+    return calculate(parts)
 }
 
 calculate(["2.0", "+", "2.0"]) == 4.0
@@ -197,4 +228,4 @@ calculate(["2.5", "*", "2.5"]) == 6.25
 calculate(["2.0", "/", "2.0"]) == 1.0
 calculate(["2.0", "%", "2.0"]) == 0.0
 calculate("1.0 2.0 3.0 4.0 5.0 count") == 5.0
-*/
+
