@@ -27,11 +27,81 @@ print("Welcome to the UW Calculator Playground")
 //: For this latter set of operations, it is safe to assume that `["count"]` (with no additional arguments) is 0, `["avg"]` is also 0, and `["fact"]` is 0. `["1", "fact"]` should return 1, and `["0", "fact"]` should also return 1. (Yes, 0-factorial is 1. True story.)
 //: 
 func calculate(_ args: [String]) -> Int {
-    return -1
+    // If the array is empty, return 0.
+    guard !args.isEmpty else { return 0 }
+        
+    // Check if the last element is a special operation keyword.
+    if let last = args.last {
+        switch last {
+        case "count":
+            // Count how many valid numeric strings appear before the final keyword.
+            // For example, ["1", "2", "3", "4", "5", "count"] yields 5.
+            let count = args.dropLast().filter { Int($0) != nil }.count
+            return count
+            
+        case "avg":
+            // Calculate the average of the numbers preceding the keyword.
+            // If there are no valid numbers, return 0.
+            let numbers = args.dropLast().compactMap { Int($0) }
+            guard !numbers.isEmpty else { return 0 }
+            let sum = numbers.reduce(0, +)
+            return sum / numbers.count
+            
+        case "fact":
+            // Calculate the factorial of a number.
+            // If no number is provided, return 0.
+            // As stated, factorial of 0 and 1 should be 1.
+            if args.count >= 2, let num = Int(args[0]) {
+                // Factorial is only defined for non-negative integers.
+                if num < 0 {
+                    return 0
+                }
+                if num == 0 || num == 1 {
+                    return 1
+                }
+                var result = 1
+                for i in 1...num {
+                    result *= i
+                }
+                return result
+            }
+            return 0
+            
+        default:
+            break
+        }
+    }
+    
+    // If no special operation, assume the expression is in the format: [operand1, operator, operand2].
+    if args.count == 3,
+        let operand1 = Int(args[0]),
+        let operand2 = Int(args[2]) {
+        let op = args[1]
+        switch op {
+        case "+":
+            return operand1 + operand2
+        case "-":
+            return operand1 - operand2
+        case "*":
+            return operand1 * operand2
+        case "/":
+            // If dividing by zero, return 0 (or handle as appropriate).
+            return operand2 != 0 ? operand1 / operand2 : 0
+        case "%":
+            // Modulo operator; ensure the divisor is not zero.
+            return operand2 != 0 ? operand1 % operand2 : 0
+        default:
+            break
+        }
+    }
+    
+    // If the input does not match any expected format, return 0.
+    return 0
 }
 
 func calculate(_ arg: String) -> Int {
-    return -1
+    let parts = arg.split(separator: " ").map { String($0) }
+    return calculate(parts)
 }
 
 //: Below this are the test expressions/calls to verify if your code is correct.
